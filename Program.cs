@@ -98,13 +98,13 @@ namespace SpencerMigration {
 		private String GetProjectPath() {
 			var di = new DirectoryInfo(_baseFolder);
 			var projectFile = di.GetFiles("*.csproj").First();
-			return  _baseFolder+projectFile;
+			return projectFile.FullName;
 		}
 
 		private DbMigrationsConfiguration GetDbMigrationConfig(XElement projectXml) {
 			var assemblyName = projectXml.Descendants(XName.Get("AssemblyName", PROJECT_NAMESPACE)).Select(i => i.Value+".dll").First();
 			var outputPath = projectXml.Descendants(XName.Get("OutputPath", PROJECT_NAMESPACE)).Select(i => i.Value).First();
-			var assemblyPath = _baseFolder+outputPath+assemblyName;
+			var assemblyPath = Path.Combine(_baseFolder,outputPath,assemblyName);
 			//Console.WriteLine("AssemblyPath: {0}", assemblyPath);
 			var assembly = Assembly.LoadFrom(assemblyPath);
 			var dataConfigType = assembly.GetTypes().Where(i => typeof(DbMigrationsConfiguration).IsAssignableFrom(i)).First();
