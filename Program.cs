@@ -56,76 +56,33 @@ namespace SpencerMigration {
 	}
 
 	public class MigrationCreator {
-		public const String PROJECT_NAMESPACE = "http://schemas.microsoft.com/developer/msbuild/2003";
+		private const String PROJECT_NAMESPACE = "http://schemas.microsoft.com/developer/msbuild/2003";
 
 		private readonly String _baseFolder;
+		private readonly String _projectPath;
+		private readonly ToolingFacade _fasade;
 
 		public MigrationCreator(String baseFolder) {
 			_baseFolder = baseFolder;
+			_projectPath = (new DirectoryInfo(_baseFolder)).GetFiles("*.csproj").First().FullName;
+			var projectXml = XElement.Load(_projectPath);
+
+			var assemblyName = projectXml.Descendants(XName.Get("AssemblyName", PROJECT_NAMESPACE)).Select(i => i.Value).First();
+			var outputPath = projectXml.Descendants(XName.Get("OutputPath", PROJECT_NAMESPACE)).Select(i => i.Value).First();
+			var binFolder = Path.Combine(_baseFolder, outputPath);
+			var assemblyPath = Path.Combine(binFolder, assemblyName);
+			var configPath = Path.Combine(_baseFolder, "web.Config");
+
+			_fasade = new ToolingFacade(assemblyName, null, binFolder, configPath, null, null);
 		}
 
 		public void AddMigration(String migrationName) {
-
-			//Console.WriteLine(_baseFolder);
-			var projectPath = GetProjectPath();
-			//Console.WriteLine("ProjectPath: {0}", projectPath);
-			var projectXml = XElement.Load(projectPath);
-
-			var dataConfig = GetDbMigrationConfig(projectXml);
-			UpdateAppConfig();
-
-			var scaffolder = new MigrationScaffolder(dataConfig);
-			var scaffold = scaffolder.Scaffold(migrationName, false);
-
-			//Console.WriteLine("scaffold.UserCode");
-			//Console.WriteLine(scaffold.UserCode);
-			//Console.WriteLine("scaffold.DesignerCode");
-			//Console.WriteLine(scaffold.DesignerCode);
-			//Console.WriteLine("scaffold.Directory");
-			//Console.WriteLine(scaffold.Directory);
-			//Console.WriteLine("scaffold.Resources");
-			//Console.WriteLine(String.Join(",", scaffold.Resources.OrderBy(kv => kv.Key)));
-			//Console.WriteLine("scaffold.Language");
-			//Console.WriteLine(scaffold.Language);
-			//Console.WriteLine("scaffold.MigrationId");
-			//Console.WriteLine(scaffold.MigrationId);
-
-			SaveMigration(projectXml, scaffold);
-
-			projectXml.Save(projectPath, SaveOptions.OmitDuplicateNamespaces);
+			SaveMigration(_fasade.Scaffold(migrationName, null, null, false));
 		}
 
-		private String GetProjectPath() {
-			var di = new DirectoryInfo(_baseFolder);
-			var projectFile = di.GetFiles("*.csproj").First();
-			return projectFile.FullName;
-		}
+		private void SaveMigration(ScaffoldedMigration scaffold) {
 
-		private DbMigrationsConfiguration GetDbMigrationConfig(XElement projectXml) {
-			var assemblyName = projectXml.Descendants(XName.Get("AssemblyName", PROJECT_NAMESPACE)).Select(i => i.Value+".dll").First();
-			var outputPath = projectXml.Descendants(XName.Get("OutputPath", PROJECT_NAMESPACE)).Select(i => i.Value).First();
-			var assemblyPath = Path.Combine(_baseFolder,outputPath,assemblyName);
-			//Console.WriteLine("AssemblyPath: {0}", assemblyPath);
-			var assembly = Assembly.LoadFrom(assemblyPath);
-			var dataConfigType = assembly.GetTypes().Where(i => typeof(DbMigrationsConfiguration).IsAssignableFrom(i)).First();
-			return (DbMigrationsConfiguration) Activator.CreateInstance(dataConfigType);
-		}
-
-		private void UpdateAppConfig() {
-			var mapping = new WebConfigurationFileMap();
-			mapping.VirtualDirectories.Add("", new VirtualDirectoryMapping(_baseFolder, true, "web.Config"));
-			var webConfig = WebConfigurationManager.OpenMappedWebConfiguration(mapping, "");
-			var appConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-			foreach (var connectionString in webConfig.ConnectionStrings.ConnectionStrings) {
-				appConfig.ConnectionStrings.ConnectionStrings.Add((ConnectionStringSettings)connectionString);
-			}
-			appConfig.Save();
-			ConfigurationManager.RefreshSection("connectionStrings");
-		}
-
-		private void SaveMigration(XElement projectXml, ScaffoldedMigration scaffold) {
 			var itemGroupName = XName.Get("ItemGroup", PROJECT_NAMESPACE);
-			var lastItemGroup = projectXml.Elements(itemGroupName).Last();
 			var newItemGroup = new XElement(itemGroupName);
 
 			var migrationUserFileName = String.Format("{0}.{1}", scaffold.MigrationId, scaffold.Language);
@@ -157,7 +114,10 @@ namespace SpencerMigration {
 			migrationResourceItem.Add(migrationResourceDependentUponItem);
 			newItemGroup.Add(migrationResourceItem);
 
+			var projectXml = XElement.Load(_projectPath);
+			var lastItemGroup = projectXml.Elements(itemGroupName).Last();
 			lastItemGroup.AddAfterSelf(newItemGroup);
+			projectXml.Save(_projectPath, SaveOptions.OmitDuplicateNamespaces);
 		}
 	}
 }
