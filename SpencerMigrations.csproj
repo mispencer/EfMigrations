@@ -3,6 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Local</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <EfVersion Condition=" '$(EfVersion)' == '' ">5</EfVersion>
     <ProductVersion></ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CA750B36-6E06-47A0-82B4-0737F0091B74}</ProjectGuid>
@@ -10,12 +11,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SpencerMigration</RootNamespace>
     <AssemblyName>SpencerMigration</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <DownloadNuGetExe>true</DownloadNuGetExe>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Devel|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,11 +55,29 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="EntityFramework, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+  <PropertyGroup Condition=" '$(EfVersion)' == '5' ">
+    <DefineConstants>$(DefineConstants);EF5</DefineConstants>
+    <AssemblyName>$(AssemblyName).EF5</AssemblyName>
+    <OutputPath>bin\EF5\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(EfVersion)' == '4' ">
+    <DefineConstants>$(DefineConstants);EF4</DefineConstants>
+    <AssemblyName>$(AssemblyName).EF4</AssemblyName>
+    <OutputPath>bin\EF4\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(EfVersion)' == '5' ">
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
+      <HintPath>.\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(EfVersion)' == '4' ">
+    <Reference Include="EntityFramework, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\packages\EntityFramework.4.3.1\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />

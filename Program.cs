@@ -1,16 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using System.Xml.Linq;
 using System.Linq;
 using System.Text;
+#if EF5
 using System.Resources;
-using System.Configuration;
-using System.Web.Configuration;
-using System.Reflection;
-using System.Data.Entity.Migrations;
-using System.Data.Entity.Infrastructure;
+#endif
 using System.Data.Entity.Migrations.Design;
 
 namespace SpencerMigration {
@@ -27,7 +23,7 @@ namespace SpencerMigration {
 					migrationName = args.Dequeue();
 				} else if (currentArg == "-b" || currentArg == "--basefolder") {
 					args.Dequeue();
-					migrationName = args.Dequeue();
+					baseFolder = args.Dequeue();
 				} else {
 					break;
 				}
@@ -65,13 +61,12 @@ namespace SpencerMigration {
 		public MigrationCreator(String baseFolder) {
 			_baseFolder = baseFolder;
 			_projectPath = (new DirectoryInfo(_baseFolder)).GetFiles("*.csproj").First().FullName;
-			var projectXml = XElement.Load(_projectPath);
 
+			var projectXml = XElement.Load(_projectPath);
 			var assemblyName = projectXml.Descendants(XName.Get("AssemblyName", PROJECT_NAMESPACE)).Select(i => i.Value).First();
 			var outputPath = projectXml.Descendants(XName.Get("OutputPath", PROJECT_NAMESPACE)).Select(i => i.Value).First();
 			var binFolder = Path.Combine(_baseFolder, outputPath);
-			var assemblyPath = Path.Combine(binFolder, assemblyName);
-			var configPath = Path.Combine(_baseFolder, "web.Config");
+			var configPath = Path.Combine(_baseFolder, "Web.config");
 
 			_fasade = new ToolingFacade(assemblyName, null, binFolder, configPath, null, null);
 		}
@@ -96,11 +91,13 @@ namespace SpencerMigration {
 			File.WriteAllText(Path.Combine(_baseFolder, migrationDesignerPath), scaffold.DesignerCode);
 			var migrationDesignerItem = new XElement(XName.Get("Compile", PROJECT_NAMESPACE));
 			migrationDesignerItem.SetAttributeValue(XName.Get("Include"), migrationDesignerPath);
-			var migrationDesignerDependentUponItem = new XElement(XName.Get("DependentUpon", PROJECT_NAMESPACE));
-			migrationDesignerDependentUponItem.Value = migrationUserFileName;
-			migrationDesignerItem.Add(migrationDesignerDependentUponItem);
+			var migrationDesignerDependentUponItem = new XElement(XName.Get("DependentUpon", PROJECT_NAMESPACE)) {
+				Value = migrationUserFileName
+			};
+		    migrationDesignerItem.Add(migrationDesignerDependentUponItem);
 			newItemGroup.Add(migrationDesignerItem);
 
+#if EF5
 			var migrationResourcePath = Path.Combine(scaffold.Directory, String.Format("{0}.resx", scaffold.MigrationId));
 			var writer = new ResXResourceWriter(Path.Combine(_baseFolder, migrationResourcePath));
 			foreach(var resource in scaffold.Resources) {
@@ -113,6 +110,7 @@ namespace SpencerMigration {
 			migrationResourceDependentUponItem.Value = migrationUserFileName;
 			migrationResourceItem.Add(migrationResourceDependentUponItem);
 			newItemGroup.Add(migrationResourceItem);
+#endif
 
 			var projectXml = XElement.Load(_projectPath);
 			var lastItemGroup = projectXml.Elements(itemGroupName).Last();
