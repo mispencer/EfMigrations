@@ -4,7 +4,7 @@ using System.IO;
 using System.Xml.Linq;
 using System.Linq;
 using System.Text;
-#if EF5
+#if (EF5 || EF6)
 using System.Resources;
 #endif
 using System.Data.Entity.Migrations.Design;
@@ -68,7 +68,11 @@ namespace SpencerMigration {
 			var binFolder = Path.Combine(_baseFolder, outputPath);
 			var configPath = Path.Combine(_baseFolder, "Web.config");
 
+#if EF6
+			_fasade = new ToolingFacade(assemblyName, assemblyName, null, binFolder, configPath, null, null);
+#else
 			_fasade = new ToolingFacade(assemblyName, null, binFolder, configPath, null, null);
+#endif
 		}
 
 		public void AddMigration(String migrationName) {
@@ -97,7 +101,7 @@ namespace SpencerMigration {
 		    migrationDesignerItem.Add(migrationDesignerDependentUponItem);
 			newItemGroup.Add(migrationDesignerItem);
 
-#if EF5
+#if (EF5 || EF6)
 			var migrationResourcePath = Path.Combine(scaffold.Directory, String.Format("{0}.resx", scaffold.MigrationId));
 			var writer = new ResXResourceWriter(Path.Combine(_baseFolder, migrationResourcePath));
 			foreach(var resource in scaffold.Resources) {

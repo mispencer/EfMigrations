@@ -55,6 +55,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(EfVersion)' == '6' ">
+    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
+    <AssemblyName>$(AssemblyName).EF6</AssemblyName>
+    <OutputPath>bin\EF6\</OutputPath>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(EfVersion)' == '5' ">
     <DefineConstants>$(DefineConstants);EF5</DefineConstants>
     <AssemblyName>$(AssemblyName).EF5</AssemblyName>
@@ -65,6 +70,12 @@
     <AssemblyName>$(AssemblyName).EF4</AssemblyName>
     <OutputPath>bin\EF4\</OutputPath>
   </PropertyGroup>
+  <ItemGroup Condition=" '$(EfVersion)' == '6' ">
+    <Reference Include="EntityFramework, Version=6.0.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <ItemGroup Condition=" '$(EfVersion)' == '5' ">
     <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
       <SpecificVersion>False</SpecificVersion>
