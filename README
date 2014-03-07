@@ -1,0 +1,2 @@
+Copy to migrating project bin folder.
+Adjust app.config to map to correct EF version.
