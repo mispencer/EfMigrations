@@ -66,7 +66,7 @@ namespace SpencerMigration {
 			var assemblyName = projectXml.Descendants(XName.Get("AssemblyName", PROJECT_NAMESPACE)).Select(i => i.Value).First();
 			var outputPath = projectXml.Descendants(XName.Get("OutputPath", PROJECT_NAMESPACE)).Select(i => i.Value).First();
 			var binFolder = Path.Combine(_baseFolder, outputPath);
-			var configPath = Path.Combine(_baseFolder, "Web.config");
+			var configPath = new DirectoryInfo(_baseFolder).GetFiles("Web.config").Any() ? Path.Combine(_baseFolder, "Web.config") : Path.Combine(_baseFolder, "App.config");
 
 #if EF6
 			_fasade = new ToolingFacade(assemblyName, assemblyName, null, binFolder, configPath, null, null);
