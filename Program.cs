@@ -9,7 +9,7 @@ using System.Resources;
 #endif
 using System.Data.Entity.Migrations.Design;
 
-namespace SpencerMigration {
+namespace EfMigration {
 	public class Program {
 		public static int Main(String[] argsArray) {
 			var args = new Queue<String>(argsArray);
