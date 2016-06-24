@@ -1,2 +1,15 @@
-Copy to migrating project bin folder.
-Adjust app.config to map to correct EF version.
+To Use:
+	Copy to migrating project bin folder.
+	Adjust app.config to map to correct EF version.
+
+Usage:
+	--action: Required - one of AddMigration, PendingMigrations, UpdateDatabase or GenerateScript
+	--name: Required for AddMigration - The name of the new migration
+	--sourceMigration: For GenerateScript - the source migration to generate script from
+	--targetMigration: For GenerateScript and UpdateDatabase - the target migration to get database to
+	--baseFolder: The base folder of the project with migrations
+	--binFolder: The folder containing the assembly containing migration
+	--assemblyName: The name of the assembly containing migration
+	--configPath: Name to the config file with connection string
+	--connectionName: Name of connection string
+	
