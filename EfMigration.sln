@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EfMigration", "EfMigration.csproj", "{CA750B36-6E06-47A0-82B4-0737F0091B74}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Devel|Any CPU = Devel|Any CPU
+		Local|Any CPU = Local|Any CPU
+		Prod|Any CPU = Prod|Any CPU
+		Uat|Any CPU = Uat|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA750B36-6E06-47A0-82B4-0737F0091B74}.Devel|Any CPU.ActiveCfg = Devel|Any CPU
+		{CA750B36-6E06-47A0-82B4-0737F0091B74}.Devel|Any CPU.Build.0 = Devel|Any CPU
+		{CA750B36-6E06-47A0-82B4-0737F0091B74}.Local|Any CPU.ActiveCfg = Local|Any CPU
+		{CA750B36-6E06-47A0-82B4-0737F0091B74}.Local|Any CPU.Build.0 = Local|Any CPU
+		{CA750B36-6E06-47A0-82B4-0737F0091B74}.Prod|Any CPU.ActiveCfg = Prod|Any CPU
+		{CA750B36-6E06-47A0-82B4-0737F0091B74}.Prod|Any CPU.Build.0 = Prod|Any CPU
+		{CA750B36-6E06-47A0-82B4-0737F0091B74}.Uat|Any CPU.ActiveCfg = Uat|Any CPU
+		{CA750B36-6E06-47A0-82B4-0737F0091B74}.Uat|Any CPU.Build.0 = Uat|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
