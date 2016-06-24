@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Local</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <EfVersion Condition=" '$(EfVersion)' == '' ">5</EfVersion>
+    <EfVersion Condition=" '$(EfVersion)' == '' ">6</EfVersion>
     <ProductVersion></ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CA750B36-6E06-47A0-82B4-0737F0091B74}</ProjectGuid>
