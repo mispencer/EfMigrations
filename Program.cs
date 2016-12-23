@@ -113,7 +113,7 @@ namespace EfMigrations {
 				}
 			}
 			if (String.IsNullOrWhiteSpace(configPath)) {
-				configPath = new DirectoryInfo(_baseFolder).GetFiles("Web.config").Any() ? Path.Combine(_baseFolder, "Web.config") : Path.Combine(_baseFolder, "App.config");
+				configPath = new DirectoryInfo(_baseFolder).GetFiles("Web.config").Any() ? Path.Combine(_baseFolder, "Web.config") : Path.Combine(_baseFolder, "app.config");
 			}
 
 #if EF6
